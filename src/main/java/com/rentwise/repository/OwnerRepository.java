@@ -1,0 +1,8 @@
+package com.rentwise.repository;
+
+import com.rentwise.model.Owner;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+public interface OwnerRepository extends JpaRepository<Owner, String> {
+}
