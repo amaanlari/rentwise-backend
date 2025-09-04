@@ -8,6 +8,7 @@ import com.rentwise.repository.RoomRepository;
 import com.rentwise.repository.TenantRepository;
 import com.rentwise.service.TenantService;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public TenantDto updateTenant(String tenantId, TenantDto dto) {
+    public TenantDto updateTenant(String tenantId, @NotNull TenantDto dto) {
         Tenant existing = tenantRepository.findById(tenantId)
                 .orElseThrow(() -> new RuntimeException("Tenant not found: " + tenantId));
 

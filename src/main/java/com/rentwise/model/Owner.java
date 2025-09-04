@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Owner {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private String ownerId;   // Matches data model
     private String name;
     private String contact;
