@@ -4,5 +4,7 @@ import com.rentwise.model.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-public interface OwnerRepository extends JpaRepository<Owner, String> {
+@Repository
+public interface OwnerRepository extends JpaRepository<Owner, Long> {
+    // Add custom queries here if needed
 }

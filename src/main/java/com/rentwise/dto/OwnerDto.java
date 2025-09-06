@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OwnerDto {
-    private String ownerId;
+    private Long ownerId;
     private String name;
     private String contact;
     private String email;

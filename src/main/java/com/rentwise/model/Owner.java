@@ -6,18 +6,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "owners")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Owner {
     @Id
-    private String ownerId;   // Matches data model
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ownerId;
+
     private String name;
     private String contact;
     private String email;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Room> rooms = new ArrayList<>();
 }

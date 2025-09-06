@@ -8,17 +8,19 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "tenants")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Tenant {
     @Id
-    private String tenantId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long tenantId;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
@@ -29,4 +31,10 @@ public class Tenant {
     private String email;
     private LocalDate joiningDate;
     private LocalDate exitDate;
+
+    @Enumerated(EnumType.STRING)
+    private TenantType tenantType; // PRIMARY or SECONDARY
+
+    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TenantDocument> documents = new ArrayList<>();
 }

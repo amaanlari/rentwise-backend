@@ -10,65 +10,16 @@ import com.rentwise.service.RentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class RentServiceImpl implements RentService {
-
-    private final RentRepository rentRepository;
-    private final RoomRepository roomRepository;
-
     @Override
-    public RentDto createRent(RentDto dto) {
-        Room room = roomRepository.findById(dto.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Room not found: " + dto.getRoomId()));
-        Rent rent = RentMapper.toEntity(dto, room);
-        return RentMapper.toDto(rentRepository.save(rent));
-    }
-
+    public RentDto createRent(RentDto dto){ System.out.println("Creating rent: "+dto); return dto;}
     @Override
-    public RentDto getRentById(String rentId) {
-        return rentRepository.findById(rentId)
-                .map(RentMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Rent not found: " + rentId));
-    }
-
+    public RentDto getRent(Long id){ System.out.println("Fetching rent: "+id); return RentDto.builder().rentId(id).build();}
     @Override
-    public List<RentDto> getAllRents() {
-        return rentRepository.findAll()
-                .stream().map(RentMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public RentDto updateRent(String rentId, RentDto dto) {
-        Rent existing = rentRepository.findById(rentId)
-                .orElseThrow(() -> new RuntimeException("Rent not found: " + rentId));
-
-        // Room change
-        if (dto.getRoomId() != null) {
-            String currentRoomId = existing.getRoom() != null ? existing.getRoom().getRoomId() : null;
-            if (!dto.getRoomId().equals(currentRoomId)) {
-                Room newRoom = roomRepository.findById(dto.getRoomId())
-                        .orElseThrow(() -> new RuntimeException("Room not found: " + dto.getRoomId()));
-                existing.setRoom(newRoom);
-            }
-        }
-
-        // Other fields
-        if (dto.getMonthYear() != null) existing.setMonthYear(dto.getMonthYear());
-        if (dto.getRentAmount() != null) existing.setRentAmount(dto.getRentAmount());
-        if (dto.getStatus() != null) existing.setStatus(dto.getStatus());
-        if (dto.getDueDate() != null) existing.setDueDate(dto.getDueDate());
-        if (dto.getPaidDate() != null) existing.setPaidDate(dto.getPaidDate());
-
-        return RentMapper.toDto(rentRepository.save(existing));
-    }
-
-    @Override
-    public void deleteRent(String rentId) {
-        rentRepository.deleteById(rentId);
-    }
+    public List<RentDto> getAllRents(){ return new ArrayList<>(); }
 }

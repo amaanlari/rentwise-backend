@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface OwnerService {
     OwnerDto createOwner(OwnerDto ownerDto);
-    OwnerDto getOwnerById(String ownerId);
+    OwnerDto getOwner(Long ownerId);
     List<OwnerDto> getAllOwners();
-    OwnerDto updateOwner(String ownerId, OwnerDto ownerDto);
-    void deleteOwner(String ownerId);
+    OwnerDto updateOwner(Long ownerId, OwnerDto ownerDto);
+    void deleteOwner(Long ownerId);
 }

@@ -12,8 +12,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomDto {
-    private String roomId;
+    private Long roomId;
+    private Long ownerId;
     private String roomNumber;
-    private Double currentRentAmount;
-    private String ownerId;
+    private BigDecimal currentRentAmount;
 }
+

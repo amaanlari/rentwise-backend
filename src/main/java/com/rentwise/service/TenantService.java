@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface TenantService {
     TenantDto createTenant(TenantDto dto);
-    TenantDto getTenantById(String tenantId);
+    TenantDto getTenant(Long tenantId);
     List<TenantDto> getAllTenants();
-    TenantDto updateTenant(String tenantId, TenantDto dto);
-    void deleteTenant(String tenantId);
 }

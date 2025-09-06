@@ -18,15 +18,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Rent {
     @Id
-    private String rentId;
+    private Long rentId;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
     private LocalDate monthYear;
-    private Double rentAmount;
-    private String status;
+    private BigDecimal rentAmount;
+    @Enumerated(EnumType.STRING)
+    private RentStatus status;
     private LocalDate dueDate;
     private LocalDate paidDate;
+
 }

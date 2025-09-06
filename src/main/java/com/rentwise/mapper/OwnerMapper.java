@@ -4,8 +4,8 @@ import com.rentwise.dto.OwnerDto;
 import com.rentwise.model.Owner;
 
 public class OwnerMapper {
+
     public static OwnerDto toDto(Owner owner) {
-        if (owner == null) return null;
         return OwnerDto.builder()
                 .ownerId(owner.getOwnerId())
                 .name(owner.getName())
@@ -15,7 +15,6 @@ public class OwnerMapper {
     }
 
     public static Owner toEntity(OwnerDto dto) {
-        if (dto == null) return null;
         return Owner.builder()
                 .ownerId(dto.getOwnerId())
                 .name(dto.getName())

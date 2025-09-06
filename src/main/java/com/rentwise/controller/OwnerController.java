@@ -19,28 +19,27 @@ public class OwnerController {
     private final OwnerService ownerService;
 
     @PostMapping
-    public ResponseEntity<OwnerDto> createOwner(@RequestBody OwnerDto dto) {
-        return ResponseEntity.ok(ownerService.createOwner(dto));
+    public OwnerDto createOwner(@RequestBody OwnerDto ownerDto) {
+        return ownerService.createOwner(ownerDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OwnerDto> getOwnerById(@PathVariable String id) {
-        return ResponseEntity.ok(ownerService.getOwnerById(id));
+    public OwnerDto getOwner(@PathVariable Long id) {
+        return ownerService.getOwner(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<OwnerDto>> getAllOwners() {
-        return ResponseEntity.ok(ownerService.getAllOwners());
+    public List<OwnerDto> getAllOwners() {
+        return ownerService.getAllOwners();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OwnerDto> updateOwner(@PathVariable String id, @RequestBody OwnerDto dto) {
-        return ResponseEntity.ok(ownerService.updateOwner(id, dto));
+    public OwnerDto updateOwner(@PathVariable Long id, @RequestBody OwnerDto ownerDto) {
+        return ownerService.updateOwner(id, ownerDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOwner(@PathVariable String id) {
+    public void deleteOwner(@PathVariable Long id) {
         ownerService.deleteOwner(id);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -14,32 +14,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
 public class RoomController {
-
-    private final RoomService roomService;
-
-    @PostMapping
-    public ResponseEntity<RoomDto> createRoom(@RequestBody RoomDto dto) {
-        return ResponseEntity.ok(roomService.createRoom(dto));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<RoomDto> getRoomById(@PathVariable String id) {
-        return ResponseEntity.ok(roomService.getRoomById(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<RoomDto>> getAllRooms() {
-        return ResponseEntity.ok(roomService.getAllRooms());
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<RoomDto> updateRoom(@PathVariable String id, @RequestBody RoomDto dto) {
-        return ResponseEntity.ok(roomService.updateRoom(id, dto));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRoom(@PathVariable String id) {
-        roomService.deleteRoom(id);
-        return ResponseEntity.noContent().build();
-    }
+    private final RoomService service;
+    @PostMapping public RoomDto create(@RequestBody RoomDto dto){ return service.createRoom(dto);}
+    @GetMapping("/{id}") public RoomDto get(@PathVariable Long id){ return service.getRoom(id);}
+    @GetMapping public List<RoomDto> getAll(){ return service.getAllRooms();}
 }

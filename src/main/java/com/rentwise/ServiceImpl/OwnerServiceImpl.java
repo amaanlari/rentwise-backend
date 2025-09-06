@@ -8,47 +8,39 @@ import com.rentwise.service.OwnerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
-
-    private final OwnerRepository ownerRepository;
 
     @Override
     public OwnerDto createOwner(OwnerDto ownerDto) {
-        Owner owner = OwnerMapper.toEntity(ownerDto);
-        return OwnerMapper.toDto(ownerRepository.save(owner));
+        System.out.println("Creating owner: " + ownerDto);
+        return ownerDto;
     }
 
     @Override
-    public OwnerDto getOwnerById(String ownerId) {
-        return ownerRepository.findById(ownerId)
-                .map(OwnerMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
+    public OwnerDto getOwner(Long ownerId) {
+        System.out.println("Fetching owner: " + ownerId);
+        return OwnerDto.builder().ownerId(ownerId).name("Test Owner").build();
     }
 
     @Override
     public List<OwnerDto> getAllOwners() {
-        return ownerRepository.findAll().stream()
-                .map(OwnerMapper::toDto)
-                .collect(Collectors.toList());
+        System.out.println("Fetching all owners");
+        return new ArrayList<>();
     }
 
     @Override
-    public OwnerDto updateOwner(String ownerId, OwnerDto ownerDto) {
-        Owner existing = ownerRepository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
-        existing.setName(ownerDto.getName());
-        existing.setContact(ownerDto.getContact());
-        existing.setEmail(ownerDto.getEmail());
-        return OwnerMapper.toDto(ownerRepository.save(existing));
+    public OwnerDto updateOwner(Long ownerId, OwnerDto ownerDto) {
+        System.out.println("Updating owner: " + ownerId);
+        return ownerDto;
     }
 
     @Override
-    public void deleteOwner(String ownerId) {
-        ownerRepository.deleteById(ownerId);
+    public void deleteOwner(Long ownerId) {
+        System.out.println("Deleting owner: " + ownerId);
     }
 }

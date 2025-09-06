@@ -12,11 +12,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TenantDto {
-    private String tenantId;
-    private String roomId;
+    private Long tenantId;
+    private Long roomId;
     private String name;
     private String contact;
     private String email;
     private LocalDate joiningDate;
     private LocalDate exitDate;
+    private String tenantType;  // PRIMARY / SECONDARY
 }

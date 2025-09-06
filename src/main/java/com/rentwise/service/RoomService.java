@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface RoomService {
     RoomDto createRoom(RoomDto dto);
-    RoomDto getRoomById(String roomId);
+    RoomDto getRoom(Long roomId);
     List<RoomDto> getAllRooms();
-    RoomDto updateRoom(String roomId, RoomDto dto);
-    void deleteRoom(String roomId);
 }

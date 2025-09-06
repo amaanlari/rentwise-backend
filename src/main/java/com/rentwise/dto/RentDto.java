@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -12,11 +13,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RentDto {
-    private String rentId;
-    private String roomId;
+    private Long rentId;
+    private Long roomId;
+    private Long tenantId;
     private LocalDate monthYear;
-    private Double rentAmount;
-    private String status;
+    private BigDecimal rentAmount;
+    private String status;  // "DUE", "OVERDUE", "PAID", "PARTIALLY_PAID"
     private LocalDate dueDate;
     private LocalDate paidDate;
 }
