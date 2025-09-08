@@ -13,34 +13,50 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
+
+    private final OwnerRepository ownerRepository;
 
     @Override
     public OwnerDto createOwner(OwnerDto ownerDto) {
-        System.out.println("Creating owner: " + ownerDto);
-        return ownerDto;
+        Owner owner = OwnerMapper.toEntity(ownerDto);
+        Owner saved = ownerRepository.save(owner);
+        return OwnerMapper.toDto(saved);
     }
 
     @Override
     public OwnerDto getOwner(Long ownerId) {
-        System.out.println("Fetching owner: " + ownerId);
-        return OwnerDto.builder().ownerId(ownerId).name("Test Owner").build();
+        return ownerRepository.findById(ownerId)
+                .map(OwnerMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Owner not found with id: " + ownerId));
     }
 
     @Override
     public List<OwnerDto> getAllOwners() {
-        System.out.println("Fetching all owners");
-        return new ArrayList<>();
+        return ownerRepository.findAll()
+                .stream()
+                .map(OwnerMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public OwnerDto updateOwner(Long ownerId, OwnerDto ownerDto) {
-        System.out.println("Updating owner: " + ownerId);
-        return ownerDto;
+        Owner existing = ownerRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner not found with id: " + ownerId));
+
+        existing.setName(ownerDto.getName());
+        existing.setContact(ownerDto.getContact());
+        existing.setEmail(ownerDto.getEmail());
+
+        return OwnerMapper.toDto(ownerRepository.save(existing));
     }
 
     @Override
     public void deleteOwner(Long ownerId) {
-        System.out.println("Deleting owner: " + ownerId);
+        if (!ownerRepository.existsById(ownerId)) {
+            throw new RuntimeException("Owner not found with id: " + ownerId);
+        }
+        ownerRepository.deleteById(ownerId);
     }
 }

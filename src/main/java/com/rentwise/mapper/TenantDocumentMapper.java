@@ -5,13 +5,14 @@ import com.rentwise.model.Tenant;
 import com.rentwise.model.TenantDocument;
 
 public class TenantDocumentMapper {
-    public static TenantDocumentDto toDto(TenantDocument document) {
+
+    public static TenantDocumentDto toDto(TenantDocument doc) {
         return TenantDocumentDto.builder()
-                .id(document.getId())
-                .tenantId(document.getTenant().getTenantId())
-                .documentType(document.getDocumentType())
-                .documentNumber(document.getDocumentNumber())
-                .filePath(document.getFilePath())
+                .id(doc.getId())
+                .tenantId(doc.getTenant().getTenantId())
+                .documentType(doc.getDocumentType())
+                .documentNumber(doc.getDocumentNumber())
+                .filePath(doc.getFilePath())
                 .build();
     }
 

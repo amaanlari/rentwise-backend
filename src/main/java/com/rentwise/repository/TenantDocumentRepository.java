@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface TenantDocumentRepository extends JpaRepository<TenantDocument, Long> {
-    List<TenantDocument> findByTenantTenantId(Long tenantId);  // Documents of a tenant
+    List<TenantDocument> findByTenantTenantId(Long tenantId);
 }

@@ -12,8 +12,32 @@ import java.util.List;
 @RequestMapping("/api/rents")
 @RequiredArgsConstructor
 public class RentController {
-    private final RentService service;
-    @PostMapping public RentDto create(@RequestBody RentDto dto){ return service.createRent(dto);}
-    @GetMapping("/{id}") public RentDto get(@PathVariable Long id){ return service.getRent(id);}
-    @GetMapping public List<RentDto> getAll(){ return service.getAllRents();}
+
+    private final RentService rentService;
+
+    @PostMapping
+    public ResponseEntity<RentDto> createRent(@RequestBody RentDto rentDto) {
+        return ResponseEntity.ok(rentService.createRent(rentDto));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RentDto> getRent(@PathVariable Long id) {
+        return ResponseEntity.ok(rentService.getRent(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RentDto>> getAllRents() {
+        return ResponseEntity.ok(rentService.getAllRents());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RentDto> updateRent(@PathVariable Long id, @RequestBody RentDto rentDto) {
+        return ResponseEntity.ok(rentService.updateRent(id, rentDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRent(@PathVariable Long id) {
+        rentService.deleteRent(id);
+        return ResponseEntity.noContent().build();
+    }
 }

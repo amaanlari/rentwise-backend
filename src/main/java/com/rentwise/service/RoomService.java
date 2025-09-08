@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface RoomService {
-    RoomDto createRoom(RoomDto dto);
+    RoomDto createRoom(RoomDto roomDto);
     RoomDto getRoom(Long roomId);
     List<RoomDto> getAllRooms();
+    RoomDto updateRoom(Long roomId, RoomDto roomDto);
+    void deleteRoom(Long roomId);
 }

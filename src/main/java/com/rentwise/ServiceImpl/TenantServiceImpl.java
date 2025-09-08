@@ -16,11 +16,51 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TenantServiceImpl implements TenantService {
+
+    private final TenantRepository tenantRepository;
+    private final RoomRepository roomRepository;
+
     @Override
-    public TenantDto createTenant(TenantDto dto) { System.out.println("Creating tenant: "+dto); return dto; }
+    public TenantDto createTenant(TenantDto tenantDto) {
+        Room room = roomRepository.findById(tenantDto.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + tenantDto.getRoomId()));
+        Tenant tenant = TenantMapper.toEntity(tenantDto, room);
+        return TenantMapper.toDto(tenantRepository.save(tenant));
+    }
+
     @Override
-    public TenantDto getTenant(Long id){ System.out.println("Fetching tenant: "+id); return TenantDto.builder().tenantId(id).build(); }
+    public TenantDto getTenant(Long tenantId) {
+        return tenantRepository.findById(tenantId)
+                .map(TenantMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Tenant not found with id: " + tenantId));
+    }
+
     @Override
-    public List<TenantDto> getAllTenants(){ return new ArrayList<>(); }
+    public List<TenantDto> getAllTenants() {
+        return tenantRepository.findAll().stream()
+                .map(TenantMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TenantDto updateTenant(Long tenantId, TenantDto tenantDto) {
+        Tenant existing = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new RuntimeException("Tenant not found with id: " + tenantId));
+        existing.setName(tenantDto.getName());
+        existing.setContact(tenantDto.getContact());
+        existing.setEmail(tenantDto.getEmail());
+        existing.setJoiningDate(tenantDto.getJoiningDate());
+        existing.setExitDate(tenantDto.getExitDate());
+        return TenantMapper.toDto(tenantRepository.save(existing));
+    }
+
+    @Override
+    public void deleteTenant(Long tenantId) {
+        if (!tenantRepository.existsById(tenantId)) {
+            throw new RuntimeException("Tenant not found with id: " + tenantId);
+        }
+        tenantRepository.deleteById(tenantId);
+    }
 }
