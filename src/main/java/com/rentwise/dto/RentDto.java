@@ -1,5 +1,6 @@
 package com.rentwise.dto;
 
+import com.rentwise.model.RentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -3,6 +3,7 @@ package com.rentwise.ServiceImpl;
 import com.rentwise.dto.RentDto;
 import com.rentwise.mapper.RentMapper;
 import com.rentwise.model.Rent;
+import com.rentwise.model.RentStatus;
 import com.rentwise.model.Room;
 import com.rentwise.repository.RentRepository;
 import com.rentwise.repository.RoomRepository;
@@ -49,7 +50,7 @@ public class RentServiceImpl implements RentService {
                 .orElseThrow(() -> new RuntimeException("Rent not found with id: " + rentId));
         existing.setMonthYear(rentDto.getMonthYear());
         existing.setRentAmount(rentDto.getRentAmount());
-        existing.setStatus(rentDto.getStatus());
+        existing.setStatus(RentStatus.valueOf(rentDto.getStatus()));
         existing.setDueDate(rentDto.getDueDate());
         existing.setPaidDate(rentDto.getPaidDate());
         return RentMapper.toDto(rentRepository.save(existing));
