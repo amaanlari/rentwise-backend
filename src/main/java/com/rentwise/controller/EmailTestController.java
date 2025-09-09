@@ -16,9 +16,9 @@ public class EmailTestController {
     @GetMapping
     public String sendTestEmail() {
         emailService.sendEmail(
-                "araibali000gmail.com",
-                "Test Email from RentWise",
-                "✅ Your email integration works!"
+                "ashfaka480@gmail.com",
+                "\"⏰ Reminder: Rent for Room:101",
+                "\"⏰ Reminder: Rent for Room 101 is due on 09-09-2025"
         );
         return "Email sent successfully!";
     }
