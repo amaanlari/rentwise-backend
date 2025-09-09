@@ -17,5 +17,6 @@ public class Owner {
     Long id;
     String name;
     String email;
-    String phone;
+    String phoneNumber;
+    String password;
 }

@@ -1,10 +1,13 @@
 package com.rentwise.controller;
 
 import com.rentwise.constants.ApiEndpoints;
+import com.rentwise.dto.OwnerDtos;
+import com.rentwise.dto.OwnerDtos.OwnerRequest;
+import com.rentwise.service.OwnerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ApiEndpoints.BASE_URL)
 public class OwnerController {
 
-    @GetMapping(ApiEndpoints.CREATE_OWNER)
-    public ResponseEntity<String> createOwner() {
-        return ResponseEntity.ok("Owner created!");
+    private final OwnerService service;
+
+    @PostMapping(ApiEndpoints.CREATE_OWNER)
+    public ResponseEntity<OwnerDtos.OwnerResponse> createOwner(@RequestBody OwnerRequest request) {
+        return ResponseEntity.ok(service.createOwner(request));
     }
 }
-//"/rentwise/api/v1/owner/create"

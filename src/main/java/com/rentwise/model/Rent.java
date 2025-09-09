@@ -14,8 +14,8 @@ public class Rent {
 
     @ManyToOne(optional = false, targetEntity = Room.class)
     Long roomId;
-    Integer month;
-    Integer year;
+    Integer rentMonth;
+    Integer rentYear;
     Double amount;
     RentStatus status;
     String dueDate;
