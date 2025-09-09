@@ -1,8 +1,14 @@
 package com.rentwise.service;
 
-import com.rentwise.dto.OwnerDtos;
+import com.rentwise.dto.OwnerDtos.DeletedOwnerResponse;
+import com.rentwise.dto.OwnerDtos.OwnerRequest;
+import com.rentwise.dto.OwnerDtos.OwnerResponse;
+import com.rentwise.dto.OwnerDtos.OwnerUpdateRequest;
+import com.rentwise.dto.mapper.OwnerMapper;
+import com.rentwise.exception.ResourceNotFoundException;
 import com.rentwise.model.Owner;
 import com.rentwise.repository.OwnerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,9 +19,11 @@ import org.springframework.stereotype.Service;
 public class OwnerServiceImpl implements OwnerService{
 
     private final OwnerRepository ownerRepository;
+    private final OwnerMapper ownerMapper;
 
     @Override
-    public OwnerDtos.OwnerResponse createOwner(OwnerDtos.OwnerRequest request) {
+    public OwnerResponse createOwner(OwnerRequest request) {
+        log.info("Creating new owner with email: {}", request.getEmail());
         Owner owner = Owner.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -23,30 +31,48 @@ public class OwnerServiceImpl implements OwnerService{
                 .password(request.getPassword())
                 .build();
 
-        Owner savedOwner = ownerRepository.save(owner);
+        Owner saved = ownerRepository.save(owner);
+        log.debug("Owner saved with ID: {}", saved.getId());
 
-        log.debug("savedOwner: {}", savedOwner);
-
-        return OwnerDtos.OwnerResponse.builder()
-                .id(savedOwner.getId())
-                .name(savedOwner.getName())
-                .email(savedOwner.getEmail())
-                .phoneNumber(savedOwner.getPhoneNumber())
-                .build();
+        return ownerMapper.toResponse(saved);
     }
 
     @Override
-    public OwnerDtos.OwnerResponse getOwnerById(String id) {
-        return null;
+    public OwnerResponse getOwnerById(Long id) {
+        log.info("Fetching owner with ID: {}", id);
+        return this.ownerRepository.getOwnerByIdAndDeletedFalse(id)
+                .map(ownerMapper::toResponse)
+                .orElseThrow(() -> {
+                    log.warn("Owner with ID {} not found or deleted", id);
+                    return new ResourceNotFoundException("Owner not found");
+                });
     }
 
+    @Transactional
     @Override
-    public OwnerDtos.OwnerResponse updateOwner(String id, OwnerDtos.OwnerRequest request) {
-        return null;
+    public OwnerResponse updateOwner(Long id, OwnerUpdateRequest request) {
+        log.info("Updating owner with ID: {}", id);
+        Owner owner = ownerRepository.getOwnerByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+
+        owner.setEmail(request.getEmail());
+        owner.setName(request.getName());
+        owner.setPhoneNumber(request.getPhoneNumber());
+
+        log.debug("Owner {} updated successfully", id);
+        return ownerMapper.toResponse(owner);
     }
 
+    @Transactional
     @Override
-    public OwnerDtos.OwnerResponse deleteOwner(String id) {
-        return null;
+    public DeletedOwnerResponse deleteOwner(Long id) {
+        log.info("Soft deleting owner with ID: {}", id);
+        Owner owner = ownerRepository.getOwnerByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+
+        owner.setDeleted(true);
+        log.debug("Owner {} marked as deleted", id);
+
+        return ownerMapper.toDeletedResponse(owner, "Owner deleted successfully");
     }
 }

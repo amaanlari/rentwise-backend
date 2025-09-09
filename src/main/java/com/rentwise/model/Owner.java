@@ -5,6 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.Instant;
 
 @Builder
 @Entity
@@ -19,4 +23,10 @@ public class Owner {
     String email;
     String phoneNumber;
     String password;
+    boolean deleted;
+
+    @CreatedDate
+    Instant createdAt;
+    @UpdateTimestamp
+    Instant updatedAt;
 }

@@ -25,4 +25,21 @@ public interface OwnerDtos {
         private String email;
         private String phoneNumber;
     }
+
+    @Data
+    @Builder
+    @Jacksonized
+    class OwnerUpdateRequest {
+        private String name;
+        private String email;
+        private String phoneNumber;
+    }
+
+    @Data
+    @Builder
+    @Jacksonized
+    class DeletedOwnerResponse {
+        private String message;
+        private OwnerResponse owner;
+    }
 }
