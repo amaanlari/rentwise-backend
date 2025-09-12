@@ -5,6 +5,7 @@ import com.rentwise.dto.OwnerDtos.OwnerRequest;
 import com.rentwise.dto.OwnerDtos.OwnerResponse;
 import com.rentwise.dto.OwnerDtos.OwnerUpdateRequest;
 import com.rentwise.dto.mapper.OwnerMapper;
+import com.rentwise.exception.DuplicateDataException;
 import com.rentwise.exception.ResourceNotFoundException;
 import com.rentwise.model.Owner;
 import com.rentwise.repository.OwnerRepository;
@@ -23,13 +24,18 @@ public class OwnerServiceImpl implements OwnerService{
 
     @Override
     public OwnerResponse createOwner(OwnerRequest request) {
-        log.info("Creating new owner with email: {}", request.getEmail());
+        log.info("Creating new owner with email: {}", request.email());
         Owner owner = Owner.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
-                .password(request.getPassword())
+                .name(request.name())
+                .email(request.email())
+                .phoneNumber(request.phoneNumber())
+                .password(request.password())
                 .build();
+
+        if (ownerRepository.existsByEmail(request.email()))
+            throw new DuplicateDataException("User with email already exists");
+        if (ownerRepository.existsByPhoneNumber(request.phoneNumber()))
+            throw new DuplicateDataException("User with phone number already exists");
 
         Owner saved = ownerRepository.save(owner);
         log.debug("Owner saved with ID: {}", saved.getId());
@@ -55,9 +61,9 @@ public class OwnerServiceImpl implements OwnerService{
         Owner owner = ownerRepository.getOwnerByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
-        owner.setEmail(request.getEmail());
-        owner.setName(request.getName());
-        owner.setPhoneNumber(request.getPhoneNumber());
+        owner.setEmail(request.email());
+        owner.setName(request.name());
+        owner.setPhoneNumber(request.phoneNumber());
 
         log.debug("Owner {} updated successfully", id);
         return ownerMapper.toResponse(owner);
