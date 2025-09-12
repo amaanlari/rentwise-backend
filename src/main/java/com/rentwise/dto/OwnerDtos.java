@@ -1,45 +1,36 @@
 package com.rentwise.dto;
 
 import lombok.Builder;
-import lombok.Data;
-import lombok.extern.jackson.Jacksonized;
+import lombok.NonNull;
 
 public interface OwnerDtos {
 
-    @Data
     @Builder
-    @Jacksonized
-    class OwnerRequest {
-        private String name;
-        private String email;
-        private String phoneNumber;
-        private String password;
-    }
+    record OwnerRequest (
+            @NonNull String name,
+            @NonNull String email,
+            @NonNull String phoneNumber,
+            @NonNull String password
+    ) {}
 
-    @Data
     @Builder
-    @Jacksonized
-    class OwnerResponse {
-        private Long id;
-        private String name;
-        private String email;
-        private String phoneNumber;
-    }
+    record OwnerResponse (
+            @NonNull Long id,
+            @NonNull String name,
+            @NonNull String email,
+            @NonNull String phoneNumber
+    ) {}
 
-    @Data
     @Builder
-    @Jacksonized
-    class OwnerUpdateRequest {
-        private String name;
-        private String email;
-        private String phoneNumber;
-    }
+    record OwnerUpdateRequest (
+            @NonNull String name,
+            @NonNull String email,
+            @NonNull String phoneNumber
+    ) {}
 
-    @Data
     @Builder
-    @Jacksonized
-    class DeletedOwnerResponse {
-        private String message;
-        private OwnerResponse owner;
-    }
+    record DeletedOwnerResponse (
+            String message,
+            OwnerResponse owner
+    ) {}
 }
