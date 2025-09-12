@@ -1,14 +1,16 @@
 package com.rentwise.controller;
 
 import com.rentwise.constants.ApiEndpoints;
+import com.rentwise.dto.OwnerDtos.DeletedOwnerResponse;
 import com.rentwise.dto.OwnerDtos.OwnerRequest;
 import com.rentwise.dto.OwnerDtos.OwnerResponse;
 import com.rentwise.dto.OwnerDtos.OwnerUpdateRequest;
 import com.rentwise.service.OwnerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +21,9 @@ public class OwnerController {
 
     @PostMapping(ApiEndpoints.CREATE_OWNER)
     public ResponseEntity<OwnerResponse> createOwner(@RequestBody OwnerRequest request) {
-        return ResponseEntity.ok(ownerService.createOwner(request));
+        OwnerResponse createdOwnerResponse = ownerService.createOwner(request);
+        return ResponseEntity.created(URI.create(ApiEndpoints.BASE_URL + ApiEndpoints.GET_OWNER_BY_ID
+                .replace(ApiEndpoints.ID, createdOwnerResponse.id().toString()))).body(createdOwnerResponse);
     }
 
     @PutMapping(ApiEndpoints.UPDATE_OWNER)
@@ -33,8 +37,7 @@ public class OwnerController {
     }
 
     @DeleteMapping(ApiEndpoints.DELETE_OWNER)
-    public ResponseEntity<Void> deleteOwner(@PathVariable Long id) {
-        ownerService.deleteOwner(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<DeletedOwnerResponse> deleteOwner(@PathVariable Long id) {
+        return ResponseEntity.ok(ownerService.deleteOwner(id));
     }
 }
