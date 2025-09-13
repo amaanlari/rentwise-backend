@@ -1,0 +1,25 @@
+###
+POST http://localhost:8080/rentwise/api/v1/owner/create
+Content-Type: application/json
+
+{
+  "name": "Test Owner",
+  "email": "test@rentwise.com",
+  "phoneNumber": "12312345678",
+  "password": "password"
+}
+
+
+###
+POST http://localhost:8080/rentwise/api/v1/room/create
+Content-Type: application/json
+
+{
+  "ownerId": 1,
+  "roomNumber": "101",
+  "roomType": "Deluxe",
+  "currentRentAmount": 100,
+  "securityDeposit": 500,
+  "status": "ACTIVE",
+  "notes": ""
+}
