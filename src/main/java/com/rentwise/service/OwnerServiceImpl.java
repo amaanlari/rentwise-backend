@@ -12,6 +12,7 @@ import com.rentwise.repository.OwnerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -25,12 +26,9 @@ public class OwnerServiceImpl implements OwnerService{
     @Override
     public OwnerResponse createOwner(OwnerRequest request) {
         log.info("Creating new owner with email: {}", request.email());
-        Owner owner = Owner.builder()
-                .name(request.name())
-                .email(request.email())
-                .phoneNumber(request.phoneNumber())
-                .password(request.password())
-                .build();
+        Owner owner = new Owner();
+
+        BeanUtils.copyProperties(request, owner);
 
         if (ownerRepository.existsByEmail(request.email()))
             throw new DuplicateDataException("User with email already exists");
@@ -61,9 +59,7 @@ public class OwnerServiceImpl implements OwnerService{
         Owner owner = ownerRepository.getOwnerByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
-        owner.setEmail(request.email());
-        owner.setName(request.name());
-        owner.setPhoneNumber(request.phoneNumber());
+        BeanUtils.copyProperties(request, owner);
 
         log.debug("Owner {} updated successfully", id);
         return ownerMapper.toResponse(owner);
