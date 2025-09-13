@@ -16,15 +16,15 @@ public class ApiEndpoints {
     public static final String CREATE_ROOM = "/v1/room/create";
     public static final String UPDATE_ROOM = "/v1/room/update/" + ID;
     public static final String GET_ROOM_BY_ID = "/v1/room/get/" + ID;
-    public static final String DELETE_ROOM = "/v1/room/delete";
+    public static final String DELETE_ROOM = "/v1/room/delete/" + ID;
 
     public static final String CREATE_TENANT = "/v1/tenant/create";
     public static final String UPDATE_TENANT = "/v1/tenant/update/" + ID;
     public static final String GET_TENANT_BY_ID = "/v1/tenant/get/" + ID;
-    public static final String DELETE_TENANT = "/v1/tenant/delete";
+    public static final String DELETE_TENANT = "/v1/tenant/delete/" + ID;
 
     public static final String CREATE_RENT =  "/v1/rent/create";
     public static final String UPDATE_RENT =  "/v1/rent/update/" + ID;
     public static final String GET_RENT_BY_ID =  "/v1/rent/get/" + ID;
-    public static final String DELETE_RENT =  "/v1/rent/delete";
+    public static final String DELETE_RENT =  "/v1/rent/delete/" + ID;
 }
