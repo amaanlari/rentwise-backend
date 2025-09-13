@@ -6,28 +6,46 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Tenant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Storing foreign key as scalar to keep implementation simple
-    private Long roomId;
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Room.class)
+    private Room room;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String contactEmail;
+
+    @Column(nullable = false, unique = true)
     private String contactPhone;
+
+    @Column(nullable = false, unique = true)
     private String idProofNumber;
+
+    @Column(nullable = false)
     private String emergencyContact;
-    private String joiningDate;
-    private String exitDate;
-    private String leaseStartDate;
-    private String leaseEndDate;
+
+    private Instant joiningDate;
+    private Instant exitDate;
+
+    @Column(nullable = false)
+    private Instant leaseStartDate;
+
+    @Column(nullable = false)
+    private Instant leaseEndDate;
+
     private String notes;
 
     @Column(nullable = false, columnDefinition = "boolean default false")

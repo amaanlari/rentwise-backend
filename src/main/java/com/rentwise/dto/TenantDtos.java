@@ -3,6 +3,8 @@ package com.rentwise.dto;
 import lombok.Builder;
 import lombok.NonNull;
 
+import java.time.Instant;
+
 public interface TenantDtos {
 
     @Builder
@@ -11,12 +13,12 @@ public interface TenantDtos {
             @NonNull String name,
             @NonNull String contactEmail,
             @NonNull String contactPhone,
-            String idProofNumber,
-            String emergencyContact,
-            String joiningDate,
-            String exitDate,
-            String leaseStartDate,
-            String leaseEndDate,
+            @NonNull String idProofNumber,
+            @NonNull String emergencyContact,
+            Instant joiningDate,
+            Instant exitDate,
+            @NonNull Instant leaseStartDate,
+            @NonNull Instant leaseEndDate,
             String notes
     ) {}
 
@@ -25,12 +27,12 @@ public interface TenantDtos {
             @NonNull String name,
             @NonNull String contactEmail,
             @NonNull String contactPhone,
-            String idProofNumber,
-            String emergencyContact,
-            String joiningDate,
-            String exitDate,
-            String leaseStartDate,
-            String leaseEndDate,
+            @NonNull String idProofNumber,
+            @NonNull String emergencyContact,
+            Instant joiningDate,
+            Instant exitDate,
+            @NonNull Instant leaseStartDate,
+            @NonNull Instant leaseEndDate,
             String notes
     ) {}
 
@@ -41,12 +43,12 @@ public interface TenantDtos {
             @NonNull String name,
             @NonNull String contactEmail,
             @NonNull String contactPhone,
-            String idProofNumber,
-            String emergencyContact,
-            String joiningDate,
-            String exitDate,
-            String leaseStartDate,
-            String leaseEndDate,
+            @NonNull String idProofNumber,
+            @NonNull String emergencyContact,
+            Instant joiningDate,
+            Instant exitDate,
+            @NonNull Instant leaseStartDate,
+            @NonNull Instant leaseEndDate,
             String notes
     ) {}
 
