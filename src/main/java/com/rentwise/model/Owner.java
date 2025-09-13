@@ -10,10 +10,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.Instant;
 
 @Builder
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Owner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

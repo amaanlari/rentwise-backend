@@ -7,17 +7,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
-@Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Owner.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Owner.class)
     private Owner owner;
 
     @Column(nullable = false)
