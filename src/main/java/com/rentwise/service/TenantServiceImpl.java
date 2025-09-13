@@ -6,7 +6,9 @@ import com.rentwise.dto.TenantDtos.TenantResponse;
 import com.rentwise.dto.TenantDtos.TenantUpdateRequest;
 import com.rentwise.dto.mapper.TenantMapper;
 import com.rentwise.exception.ResourceNotFoundException;
+import com.rentwise.model.Room;
 import com.rentwise.model.Tenant;
+import com.rentwise.repository.RoomRepository;
 import com.rentwise.repository.TenantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TenantServiceImpl implements TenantService {
 
+    private final RoomRepository roomRepository;
     private final TenantRepository tenantRepository;
     private final TenantMapper tenantMapper;
 
@@ -27,6 +32,9 @@ public class TenantServiceImpl implements TenantService {
         log.info("Creating tenant for roomId: {}", request.roomId());
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(request, tenant);
+        Room room = roomRepository.getRoomByIdAndDeletedFalse(request.roomId()).orElseThrow(() ->
+                new ResourceNotFoundException("Room not found"));
+        tenant.setRoom(room);
         Tenant saved = tenantRepository.save(tenant);
         return tenantMapper.toResponse(saved);
     }

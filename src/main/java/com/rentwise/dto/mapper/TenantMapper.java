@@ -9,7 +9,7 @@ public class TenantMapper {
     public TenantDtos.TenantResponse toResponse(Tenant tenant) {
         return TenantDtos.TenantResponse.builder()
                 .id(tenant.getId())
-                .roomId(tenant.getRoomId())
+                .roomId(tenant.getRoom().getId())
                 .name(tenant.getName())
                 .contactEmail(tenant.getContactEmail())
                 .contactPhone(tenant.getContactPhone())

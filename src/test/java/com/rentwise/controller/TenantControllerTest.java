@@ -1,10 +1,16 @@
 package com.rentwise.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rentwise.dto.RoomDtos;
 import com.rentwise.dto.TenantDtos;
+import com.rentwise.dto.mapper.TenantMapper;
+import com.rentwise.model.Owner;
+import com.rentwise.model.Room;
+import com.rentwise.model.Tenant;
 import com.rentwise.model.enums.RoomStatus;
-import org.junit.jupiter.api.BeforeEach;
+import com.rentwise.repository.OwnerRepository;
+import com.rentwise.repository.RoomRepository;
+import com.rentwise.repository.TenantRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,12 +19,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class TenantControllerTest {
 
     @Autowired
@@ -27,91 +37,190 @@ class TenantControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private TenantDtos.TenantRequest tenantRequest;
-    private TenantDtos.TenantUpdateRequest tenantUpdateRequest;
+    @Autowired
+    private OwnerRepository ownerRepository;
 
-    private long ensureRoomAndGetId() throws Exception {
-        RoomDtos.RoomRequest roomRequest = RoomDtos.RoomRequest.builder()
-                .ownerId(1L)
-                .roomNumber("201")
-                .roomType("Standard")
-                .currentRentAmount(1000.0)
-                .securityDeposit(2000.0)
-                .status(RoomStatus.ACTIVE)
-                .notes("For tenant test")
+    @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
+    private TenantMapper tenantMapper;
+
+    private Owner createAndSaveOwner() {
+        Owner owner = Owner.builder()
+                .name("Test Owner")
+                .email("test.owner@example.com")
+                .phoneNumber("1234567890")
+                .password("password")
                 .build();
-        String response = mockMvc.perform(post("/rentwise/api/v1/room/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(roomRequest)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-        return objectMapper.readTree(response).path("data").path("id").asLong();
+        return ownerRepository.save(owner);
     }
 
-    @BeforeEach
-    void setUp() {
-        tenantUpdateRequest = TenantDtos.TenantUpdateRequest.builder()
-                .name("Jane Doe Updated")
-                .contactEmail("jane.updated@example.com")
-                .contactPhone("2223334444")
-                .idProofNumber("ID5678")
-                .emergencyContact("Mary 555-9999")
-                .joiningDate("2024-02-01")
-                .exitDate("2025-02-01")
-                .leaseStartDate("2024-02-01")
-                .leaseEndDate("2025-02-01")
-                .notes("Updated tenant")
+    private Room createAndSaveRoom(Owner owner) {
+        Room room = Room.builder()
+                .owner(owner)
+                .roomNumber("101")
+                .roomType("Deluxe")
+                .currentRentAmount(1500.0)
+                .securityDeposit(3000.0)
+                .status(RoomStatus.ACTIVE)
                 .build();
+        return roomRepository.save(room);
     }
 
     @Test
-    void tenant_CRUD_flow() throws Exception {
-        long roomId = ensureRoomAndGetId();
+    void createTenant_shouldCreateAndReturnTenant() throws Exception {
+        // Arrange
+        Owner savedOwner = createAndSaveOwner();
+        Room savedRoom = createAndSaveRoom(savedOwner);
 
-        tenantRequest = TenantDtos.TenantRequest.builder()
-                .roomId(roomId)
-                .name("Jane Doe")
-                .contactEmail("jane@example.com")
-                .contactPhone("1112223333")
-                .idProofNumber("ID1234")
-                .emergencyContact("John 555-1234")
-                .joiningDate("2024-01-01")
-                .exitDate("2025-01-01")
-                .leaseStartDate("2024-01-01")
-                .leaseEndDate("2024-12-31")
-                .notes("Good tenant")
+        TenantDtos.TenantRequest tenantRequest = TenantDtos.TenantRequest.builder()
+                .roomId(savedRoom.getId())
+                .name("John Tenant")
+                .contactEmail("john.tenant@example.com")
+                .contactPhone("9876543210")
+                .idProofNumber("ID12345")
+                .emergencyContact("9998887770")
+                .leaseStartDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .leaseEndDate(Instant.parse("2025-02-01T23:59:59Z"))
+                .joiningDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .exitDate(Instant.parse("2025-01-31T00:00:00Z"))
                 .build();
 
-        String createResponse = mockMvc.perform(post("/rentwise/api/v1/tenant/create")
+        // Act & Assert
+        mockMvc.perform(post("/rentwise/api/v1/tenant/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tenantRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.responseStatus").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.id").isNumber())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(jsonPath("$.data.roomId").value(savedRoom.getId()))
+                .andExpect(jsonPath("$.data.name").value(tenantRequest.name()))
+                .andExpect(jsonPath("$.data.contactEmail").value(tenantRequest.contactEmail()))
+                .andExpect(jsonPath("$.data.contactPhone").value(tenantRequest.contactPhone()))
+                .andExpect(jsonPath("$.data.idProofNumber").value(tenantRequest.idProofNumber()))
+                .andExpect(jsonPath("$.data.emergencyContact").value(tenantRequest.emergencyContact()))
+                .andExpect(jsonPath("$.data.leaseStartDate").value(tenantRequest.leaseStartDate().toString()))
+                .andExpect(jsonPath("$.data.leaseEndDate").value(tenantRequest.leaseEndDate().toString()));
+    }
 
-        long createdId = objectMapper.readTree(createResponse).path("data").path("id").asLong();
+    @Test
+    void getTenant_shouldReturnTenant_whenExists() throws Exception {
+        // Arrange
+        Owner savedOwner = createAndSaveOwner();
+        Room savedRoom = createAndSaveRoom(savedOwner);
+        Tenant tenant = Tenant.builder()
+                .room(savedRoom)
+                .name("Jane Tenant")
+                .contactEmail("jane.tenant@example.com")
+                .contactPhone("1122334455")
+                .idProofNumber("ID54321")
+                .emergencyContact("5556667778")
+                .leaseStartDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .leaseEndDate(Instant.parse("2025-02-01T23:59:59Z"))
+                .joiningDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .exitDate(Instant.parse("2025-11-30T00:00:00Z"))
+                .build();
 
-        mockMvc.perform(get("/rentwise/api/v1/tenant/get/" + createdId))
+        Tenant savedTenant = tenantRepository.save(tenant);
+
+        // Act & Assert
+        mockMvc.perform(get("/rentwise/api/v1/tenant/get/" + savedTenant.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value((int)createdId))
-                .andExpect(jsonPath("$.data.name").value("Jane Doe"));
+                .andExpect(jsonPath("$.data.id").value(savedTenant.getId()))
+                .andExpect(jsonPath("$.data.roomId").value(savedRoom.getId()))
+                .andExpect(jsonPath("$.data.name").value(savedTenant.getName()))
+                .andExpect(jsonPath("$.data.contactEmail").value(savedTenant.getContactEmail()))
+                .andExpect(jsonPath("$.data.contactPhone").value(savedTenant.getContactPhone()))
+                .andExpect(jsonPath("$.data.idProofNumber").value(savedTenant.getIdProofNumber()))
+                .andExpect(jsonPath("$.data.emergencyContact").value(savedTenant.getEmergencyContact()))
+                .andExpect(jsonPath("$.data.leaseStartDate").value(savedTenant.getLeaseStartDate().toString()))
+                .andExpect(jsonPath("$.data.leaseEndDate").value(savedTenant.getLeaseEndDate().toString()))
+                .andExpect(jsonPath("$.data.joiningDate").value(savedTenant.getJoiningDate().toString()))
+                .andExpect(jsonPath("$.data.exitDate").value(savedTenant.getExitDate().toString()));
+    }
 
-        mockMvc.perform(put("/rentwise/api/v1/tenant/update/" + createdId)
+    @Test
+    void getTenant_shouldReturn404_whenNotFound() throws Exception {
+        mockMvc.perform(get("/rentwise/api/v1/tenant/get/9999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateTenant_shouldUpdateAndReturnTenant() throws Exception {
+        // Arrange
+        Owner savedOwner = createAndSaveOwner();
+        Room savedRoom = createAndSaveRoom(savedOwner);
+        Tenant tenant = Tenant.builder()
+                .room(savedRoom)
+                .name("Update Me")
+                .contactEmail("update.me@example.com")
+                .contactPhone("1212121212")
+                .idProofNumber("IDToUpdate")
+                .emergencyContact("3434343434")
+                .leaseStartDate(Instant.parse("2023-01-01T00:00:00Z"))
+                .leaseEndDate(Instant.parse("2023-12-31T23:59:59Z"))
+                .build();
+        Tenant savedTenant = tenantRepository.save(tenant);
+
+        TenantDtos.TenantUpdateRequest updateRequest = TenantDtos.TenantUpdateRequest.builder()
+                .name("Updated Name")
+                .contactEmail("updated.email@example.com")
+                .contactPhone("0000000000")
+                .idProofNumber("IDUpdated")
+                .emergencyContact("1111111111")
+                .leaseStartDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .leaseEndDate(Instant.parse("2025-01-31T23:59:59Z"))
+                .joiningDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .exitDate(Instant.parse("2025-12-31T00:00:00Z"))
+                .build();
+
+        // Act & Assert
+        mockMvc.perform(put("/rentwise/api/v1/tenant/update/" + savedTenant.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tenantUpdateRequest)))
+                        .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.name").value("Jane Doe Updated"))
-                .andExpect(jsonPath("$.data.contactEmail").value("jane.updated@example.com"));
+                .andExpect(jsonPath("$.data.id").value(savedTenant.getId()))
+                .andExpect(jsonPath("$.data.roomId").value(savedRoom.getId()))
+                .andExpect(jsonPath("$.data.name").value(updateRequest.name()))
+                .andExpect(jsonPath("$.data.contactEmail").value(updateRequest.contactEmail()))
+                .andExpect(jsonPath("$.data.contactPhone").value(updateRequest.contactPhone()))
+                .andExpect(jsonPath("$.data.idProofNumber").value(updateRequest.idProofNumber()))
+                .andExpect(jsonPath("$.data.emergencyContact").value(updateRequest.emergencyContact()))
+                .andExpect(jsonPath("$.data.leaseStartDate").value(updateRequest.leaseStartDate().toString()))
+                .andExpect(jsonPath("$.data.leaseEndDate").value(updateRequest.leaseEndDate().toString()))
+                .andExpect(jsonPath("$.data.joiningDate").value(updateRequest.joiningDate().toString()))
+                .andExpect(jsonPath("$.data.exitDate").value(updateRequest.exitDate().toString()));
+    }
 
-        mockMvc.perform(delete("/rentwise/api/v1/tenant/delete/" + createdId))
+    @Test
+    void deleteTenant_shouldSoftDeleteTenant_andSubsequentGetReturns404() throws Exception {
+        // Arrange
+        Owner savedOwner = createAndSaveOwner();
+        Room savedRoom = createAndSaveRoom(savedOwner);
+        Tenant tenant = Tenant.builder()
+                .room(savedRoom)
+                .name("Delete Me")
+                .contactEmail("delete.me@example.com")
+                .contactPhone("5656565656")
+                .idProofNumber("IDToDelete")
+                .emergencyContact("9898989898")
+                .leaseStartDate(Instant.parse("2022-01-01T00:00:00Z"))
+                .leaseEndDate(Instant.parse("2022-12-31T23:59:59Z"))
+                .joiningDate(Instant.parse("2025-01-01T00:00:00Z"))
+                .exitDate(Instant.parse("2025-12-31T00:00:00Z"))
+                .build();
+        Tenant savedTenant = tenantRepository.save(tenant);
+        // Act & Assert: Delete the tenant
+        mockMvc.perform(delete("/rentwise/api/v1/tenant/delete/" + savedTenant.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.message").value("Tenant deleted successfully"));
+                .andExpect(jsonPath("$.data.message").value("Tenant deleted successfully"))
+                .andExpect(jsonPath("$.data.tenant.id").value(tenant.getId()));
 
-        mockMvc.perform(get("/rentwise/api/v1/tenant/get/" + createdId))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.responseStatus").value("FAILURE"));
+        // Act & Assert: Verify it is not accessible anymore
+        mockMvc.perform(get("/rentwise/api/v1/tenant/get/" + savedTenant.getId()))
+                .andExpect(status().isNotFound());
     }
 }
