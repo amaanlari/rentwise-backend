@@ -1,24 +1,32 @@
 package com.rentwise.model;
 
 import com.rentwise.model.enums.RentStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Rent {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne(optional = false, targetEntity = Room.class)
-    Long roomId;
-    Integer rentMonth;
-    Integer rentYear;
-    Double amount;
-    RentStatus status;
-    String dueDate;
-    String paidDate;
-    String notes;
+    // Storing foreign key as scalar to keep implementation simple
+    private Long roomId;
+    private Integer rentMonth;
+    private Integer rentYear;
+    private Double amount;
+    private RentStatus status;
+    private String dueDate;
+    private String paidDate;
+    private String notes;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean deleted;
 }
