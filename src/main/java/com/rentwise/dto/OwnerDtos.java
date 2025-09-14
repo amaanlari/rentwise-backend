@@ -1,5 +1,7 @@
 package com.rentwise.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.NonNull;
 
@@ -7,10 +9,18 @@ public interface OwnerDtos {
 
     @Builder
     record OwnerRequest (
-            @NonNull String name,
-            @NonNull String email,
-            @NonNull String phoneNumber,
-            @NonNull String password
+            @NotBlank(message = "Name is required")
+            String name,
+
+            @NotBlank(message = "Email is required")
+            String email,
+
+            @NotBlank(message = "Phone number is required")
+            String phoneNumber,
+
+            @NotBlank(message = "Password is required")
+            String password
+
     ) {}
 
     @Builder
@@ -23,9 +33,14 @@ public interface OwnerDtos {
 
     @Builder
     record OwnerUpdateRequest (
-            @NonNull String name,
-            @NonNull String email,
-            @NonNull String phoneNumber
+            @NotBlank(message = "Name is required")
+            String name,
+
+            @NotBlank(message = "Email is required")
+            String email,
+
+            @NotBlank(message = "Phone number is required")
+            String phoneNumber
     ) {}
 
     @Builder
