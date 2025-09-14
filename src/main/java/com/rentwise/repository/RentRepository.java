@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface RentRepository extends JpaRepository<Rent, Long> {
     Optional<Rent> getRentByIdAndDeletedFalse(Long id);
+
+    boolean existsByRoomIdAndRentMonthAndRentYearAndDeletedIsFalse(Long roomId, Integer rentMonth, Integer rentYear);
 }
