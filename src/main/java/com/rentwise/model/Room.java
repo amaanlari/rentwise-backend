@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "room", indexes = {
+        @Index(name = "idx_room_owner_id", columnList = "owner_id, deleted")
+})
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

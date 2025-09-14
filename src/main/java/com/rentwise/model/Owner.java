@@ -14,6 +14,10 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "owner", indexes = {
+        @Index(name = "idx_owner_email", columnList = "email, deleted"),
+        @Index(name = "idx_owner_phone_number", columnList = "phone_number, deleted"),
+})
 public class Owner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

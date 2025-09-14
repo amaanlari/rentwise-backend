@@ -9,7 +9,7 @@ public class RentMapper {
     public RentDtos.RentResponse toResponse(Rent rent) {
         return RentDtos.RentResponse.builder()
                 .id(rent.getId())
-                .roomId(rent.getRoomId())
+                .roomId(rent.getRoom().getId())
                 .rentMonth(rent.getRentMonth())
                 .rentYear(rent.getRentYear())
                 .amount(rent.getAmount())

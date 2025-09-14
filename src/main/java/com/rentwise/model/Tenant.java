@@ -13,6 +13,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "tenant", indexes = {
+        @Index(name = "idx_tenant_room_id", columnList = "room_id, deleted"),
+        @Index(name = "idx_tenant_contact_email", columnList = "contact_email, deleted"),
+        @Index(name = "idx_tenant_contact_phone", columnList = "contact_phone_number, deleted")
+})
 public class Tenant {
 
     @Id
@@ -29,13 +34,13 @@ public class Tenant {
     private String contactEmail;
 
     @Column(nullable = false, unique = true)
-    private String contactPhone;
+    private String contactPhoneNumber;
 
     @Column(nullable = false, unique = true)
     private String idProofNumber;
 
     @Column(nullable = false)
-    private String emergencyContact;
+    private String emergencyContactNumber;
 
     private Instant joiningDate;
     private Instant exitDate;
