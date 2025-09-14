@@ -43,7 +43,6 @@ public class Rent {
     @Column(nullable = false)
     private String dueDate;
 
-    @Column(nullable = false)
     private String paidDate;
     private String notes;
 
